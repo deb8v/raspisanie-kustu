@@ -12,6 +12,8 @@ import re
 
 CACHE_DIR="docs/"
 
+
+
 def cacheDir(cachedir="docs/"):
     CACHE_DIR=cachedir
     return CACHE_DIR
@@ -63,18 +65,18 @@ def getFromCache(url,expieri):
                 journalD(1,CONTENT_SOURCE,ERROR_CONTEXT)
                 return "ERR"
     def getModifTime(path):
-        cont=open('docs/e621c5499e18d482dbc52c2c666344c8.bak','r')
-        print(os.listdir('docs'))
-        #cont=open(path,'r')
+        #cont=open('docs/e621c5499e18d482dbc52c2c666344c8.bak','r')
+        #print(os.listdir('docs'))
+        cont=open(path,'r')
         ra=cont.read()
         try:
             editt=json.loads(ra)
             rra=editt['modified']
-            print(rra)
+            #print(rra)
             
         except TypeError:
             pass
-        #except JSONDecodeError:
+        except JSONDecodeError:
         #    cont.close();
             return 0;
         cont.close();
@@ -125,7 +127,7 @@ def test():
     print("R2t")
     teachersJSON=getFromCache('https://portal.kuzstu.ru/api/teachers',3600*24)
             
-test();
+#test();
     ## 1 - проверяем наличие файла
     ## 2 - проверяем его актуальность
     ## 3 - качаем

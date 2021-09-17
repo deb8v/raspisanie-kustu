@@ -18,12 +18,13 @@ modules.cacheDir(CACHE_DIR);
 
 
 
-teachersJSON=modules.getFromCache('https://portal.kuzstu.ru/api/teachers',3600*24)
-groupsJSON=modules.getFromCache('https://portal.kuzstu.ru/api/group',3600*24*7)
+teachersJSON=json.loads(modules.getFromCache('https://portal.kuzstu.ru/api/teachers',3600*24))
+groupsJSON=json.loads(modules.getFromCache('https://portal.kuzstu.ru/api/group',3600*24*7))
 
 TIME_FORMAT='%X %x %Z'
 
-SUBSCRIBERS_LIST=["G6265","КСс-211","УКб",'ТЭ',"T17453","Яковлева"]
+#SUBSCRIBERS_LIST=["G6265","КСс-211","УКб",'ТЭ',"T17453","Малюгин"]
+SUBSCRIBERS_LIST=["G6265","КСс-211","T17453","Мал"]
 SUBSCOMPILED_LIST=list()
 
 
@@ -32,15 +33,7 @@ SUBSCOMPILED_LIST=list()
 
 
 
-def getTeacherIDByName(pripoduname):
-    for i in teachersJSON:
-        if i['name']==pripoduname:
-            return i['person_id']
-    
-def getTeacherNameByID(pripoduid):
-    for i in teachersJSON:
-        if i['person_id']==pripoduid:
-            return i['name']
+
 
 
 def getByGroup_ID(group_id):
@@ -52,24 +45,22 @@ def getByGroup_ID(group_id):
 
     CONTENT_SOURCE="GROUP_PARSER"
     URL="https://portal.kuzstu.ru/api/student_schedule?group_id={group_id}".format(group_id=group_id)
-    CURL=requests.get(URL)
-    RQ_STATUS=CURL.status_code
-    if(RQ_STATUS==404):
-        ERROR_CONTEXT="URL: "+URL+", CODE: "+RQ_STATUS+"; NOT FOUND;"
-        modules.journalD(1,CONTENT_SOURCE,ERROR_CONTEXT)
-        #проверка в кэше если не найден
-    if(RQ_STATUS!=200):
-        ERROR_CONTEXT="URL: "+URL+", CODE: "+RQ_STATUS+";"
-        modules.journalD(6,CONTENT_SOURCE,ERROR_CONTEXT)
-        #высылка в сисьлох
-    JQ=json.loads(CURL.text)
+    
+    
+    JQ=json.loads(modules.getFromCache(URL,1000))
     RETURN_CONTENT={'timestamp':time.time(),'time':TIME_NOW,'status':RQ_STATUS,'content':JQ}
 
     return RETURN_CONTENT
 
 def getTeacherShudleByUID(teacher_id):
+    
     CONTENT_SOURCE="GET_TEACHER_BY_UID"
     TIME_NOW=time.strftime(TIME_FORMAT)
+
+    def getTeacherNameByID(pripoduid):
+        for i in teachersJSON:
+            if i['person_id']==str(pripoduid):
+                return i['name']
 
     #https://portal.kuzstu.ru/api/teacher_schedule?teacher_id=101040
     URL='https://portal.kuzstu.ru/api/teacher_schedule?teacher_id={teacher_id}'.format(teacher_id=teacher_id)
@@ -84,14 +75,15 @@ def getTeacherShudleByUID(teacher_id):
         modules.journalD(6,CONTENT_SOURCE,ERROR_CONTEXT)
         #высылка в сисьлох
     JQ=json.loads(CURL.text)
-    JQa=JQ
-    for i in JQa:
+    JQo=list()
+    for i in JQ:
         i['teacher_id']=teacher_id
         i['teacher_name']=getTeacherNameByID(teacher_id)
-        print(i)
-        
+        #print(i)
+        JQo.append(i)
         pass
-    RETURN_CONTENT={'timestamp':time.time(),'time':TIME_NOW,'status':RQ_STATUS,'content':JQ}
+    RETURN_CONTENT={'timestamp':time.time(),'time':TIME_NOW,'status':RQ_STATUS,'content':JQo}
+    return RETURN_CONTENT
 
 
 def compileGroupList(sublist, grouplist):
@@ -102,8 +94,19 @@ def compileGroupList(sublist, grouplist):
     returnlist=[]
     returnlistBeta=[]
     regexpType1="G\d+"
-    regexpType2="\W{2,4}\s\d{2,4}"
+    regexpType1T="T\d+"
+    regexpType2="\w{0,6}-\d{3}"
     regexpType3="R\*+"
+
+
+    def getTeacherIDByName(pripoduname):
+        for i in teachersJSON:
+            ra=i['name'].find(pripoduname)
+            if ra>-1:
+                returnlist.append(-int( "".join(re.findall("\d+", i['person_id']))))    
+                
+    
+    
 
     def findNumByText(text):
         #print(text)
@@ -114,7 +117,7 @@ def compileGroupList(sublist, grouplist):
             #print(d)
             name=str(d["name"])
             #\D{3,5}-\d{3}
-            ax = re.search(text+"\w{0,6}-\d{3}", name)
+            ax = re.search(text+regexpType2, name)
             at=1
             #if(ax!=1 and text.find(name)!=-1):at=1
             #print(name)
@@ -129,7 +132,10 @@ def compileGroupList(sublist, grouplist):
         
         for rt1 in re.findall(regexpType1,subject):
             returnlist.append(int( "".join(re.findall("\d+", rt1))))
+        for rt1T in re.findall(regexpType1T,subject):
+            returnlist.append(-int( "".join(re.findall("\d+", rt1T))))
         findNumByText(subject)
+        getTeacherIDByName(subject)
         #for rt2 in re.findall(regexpType2,subject):
         #    returnlist.append(int(rt1))
         
@@ -139,18 +145,18 @@ def compileGroupList(sublist, grouplist):
 
 
 
-'''
-teachersList=json.loads(teachersJSON)
-groupsList=json.loads(groupsJSON)
 
-SUBSCOMPILED_LIST = compileGroupList(SUBSCRIBERS_LIST,groupsList)
+
+
+SUBSCOMPILED_LIST = compileGroupList(SUBSCRIBERS_LIST,groupsJSON)
 print(SUBSCRIBERS_LIST)
 print(SUBSCOMPILED_LIST)
-#print(groupsList)
-tsopa=getByGroup_ID(5833)
-'''
+#print(groupsJSON)
+
+
 #print(tsopa['content'])
-#getTeacherShudleByUID(101040)
+#tsopa=getByGroup_ID(5833)
+getTeacherShudleByUID(19514)
 
 
 
