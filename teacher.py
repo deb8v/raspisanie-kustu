@@ -10,130 +10,33 @@ import hashlib
 import codecs
 import time
 import re
+import modules
 #PERSONS_PATH=
 
 
+modules.cfg()
+modules.modules.getFromCache()
+
+teachersJSON=modules.getFromCache('https://portal.kuzstu.ru/api/teachers',3600*24)
+groupsJSON=modules.getFromCache('https://portal.kuzstu.ru/api/group',3600*24*7)
 
 TIME_FORMAT='%X %x %Z'
 
-SUBSCRIBERS_LIST=["G6265","КСс-211","УКб",'ТЭ']
+SUBSCRIBERS_LIST=["G6265","КСс-211","УКб",'ТЭ',"T17453","Яковлева"]
 SUBSCOMPILED_LIST=list()
 
-CACHE_DIR="docs/"
 
 
 
 
-def getFromCache(url,expieri):
-    CONTENT_SOURCE="CACHE_MODULE"
-    def is_accessible(path, mode='w'):
-        try:
-            f = open(path, mode)
-            f.close()
-        except IOError:
-            return False
-        return True
-    def readFromUrl(url):
-        CURL=requests.get(url)
-        RQ_STATUS=CURL.status_code
-        if(RQ_STATUS==404):
-            ERROR_CONTEXT="URL: "+url+", CODE: "+RQ_STATUS+"; NOT FOUND;"
-            journalD(1,CONTENT_SOURCE,ERROR_CONTEXT)
-            #проверка в кэше если не найден
-            return None
-        else:
-            if(RQ_STATUS==200):
-                return CURL.text
-        return
 
-    def download(path,url):
-        print("downloading")
-        CURL=requests.get(url)
-        RQ_STATUS=CURL.status_code
-        if(RQ_STATUS==404):
-            ERROR_CONTEXT="URL: "+url+", CODE: "+RQ_STATUS+"; NOT FOUND;"
-            journalD(1,CONTENT_SOURCE,ERROR_CONTEXT)
-            #проверка в кэше если не найден
-            return "ERR"
-        else:
-            if(RQ_STATUS==200):
-                fileStructure={"modified":time.time(),'url':url,'path':path,'text':CURL.text}
-                cont=open(path,'w');
-                cont.write(json.dumps(fileStructure))
-                cont.close()
-                return "OK"
-            else:
-                ERROR_CONTEXT="URL: "+url+", CODE: "+RQ_STATUS
-                journalD(1,CONTENT_SOURCE,ERROR_CONTEXT)
-                return "ERR"
-    def getModifTime(path):
-        cont=open(path,'r')
-        try:
-            editt=json.loads(cont.read())['modified']
-        except JSONDecodeError:
-            cont.close();
-            return 0;
-        cont.close();
-        return editt
 
-    def getFile(path):
-        cont=open(path,'r')
-        try:
-            jsontext=cont.read()
-            editt=json.loads(jsontext)['text']
-        except JSONDecodeError:
-            cont.close();
-            return 0;
-        cont.close();
-        return editt
-
-    ### СВЕРХУ ФУНКЦИИ
-    ### СНИЗУ ЛОГИКА
-    
-    hashbyurlname=hashlib.md5(str(url).encode()).hexdigest()
-    print(hashbyurlname)
-    timenow=time.time()
-    path=CACHE_DIR+hashbyurlname+'.bak'
-        
-    downloadEnyvere=False
-    notWritable=False
-
-    fileStatus=is_accessible(path)
-    if(not fileStatus): #если не доступен на запись
-        ERROR_CONTEXT="PATH: "+path+", CODE: NOT AVAILABLE;"
-        journalD(3,CONTENT_SOURCE,ERROR_CONTEXT)
-        notWritable=True
-        downloadEnyvere=True
-    deltatime=None
-    if(fileStatus): #если доступен на запись
-        mtime=getModifTime(path)
-        deltatime=timenow-mtime
-        deltatime=abs(deltatime)
-        
-    print(timenow,mtime,deltatime)
-    if(not notWritable):
-     if(deltatime<expieri or downloadEnyvere):
-        download(url=url,path=path)
-        mtime=getModifTime(path)
-        deltatime=timenow-mtime
-        deltatime=abs(deltatime)
-        print(timenow,mtime,deltatime)
-     else:
-        if(notWritable):
-            return readFromUrl(url=url)
-        else:
-            return getFile(path)
-    ## 1 - проверяем наличие файла
-    ## 2 - проверяем его актуальность
-    ## 3 - качаем
-    ## 4 - если нет кэша и ошибка загрузки выдаём ошибку в journal
 
     
-
-
-def journalD(pex,source,meta):
-
-    print(source,'\t',meta,end=str(pex))
+def getTeacherNameByID(pripoduid):
+    for i in teachersJSON:
+        if i['person_id']==pripoduid:
+            return i['name']
 
 
 def getByGroup_ID(group_id):
@@ -149,16 +52,43 @@ def getByGroup_ID(group_id):
     RQ_STATUS=CURL.status_code
     if(RQ_STATUS==404):
         ERROR_CONTEXT="URL: "+URL+", CODE: "+RQ_STATUS+"; NOT FOUND;"
-        journalD(1,CONTENT_SOURCE,ERROR_CONTEXT)
+        modules.journalD(1,CONTENT_SOURCE,ERROR_CONTEXT)
         #проверка в кэше если не найден
     if(RQ_STATUS!=200):
         ERROR_CONTEXT="URL: "+URL+", CODE: "+RQ_STATUS+";"
-        journalD(6,CONTENT_SOURCE,ERROR_CONTEXT)
+        modules.journalD(6,CONTENT_SOURCE,ERROR_CONTEXT)
         #высылка в сисьлох
     JQ=json.loads(CURL.text)
     RETURN_CONTENT={'timestamp':time.time(),'time':TIME_NOW,'status':RQ_STATUS,'content':JQ}
 
     return RETURN_CONTENT
+
+def getTeacherShudleByUID(teacher_id):
+    CONTENT_SOURCE="GET_TEACHER_BY_UID"
+    TIME_NOW=time.strftime(TIME_FORMAT)
+
+    #https://portal.kuzstu.ru/api/teacher_schedule?teacher_id=101040
+    URL='https://portal.kuzstu.ru/api/teacher_schedule?teacher_id={teacher_id}'.format(teacher_id=teacher_id)
+    CURL=requests.get(URL)
+    RQ_STATUS=CURL.status_code
+    if(RQ_STATUS==404):
+        ERROR_CONTEXT="URL: "+URL+", CODE: "+RQ_STATUS+"; NOT FOUND;"
+        modules.journalD(1,CONTENT_SOURCE,ERROR_CONTEXT)
+        #проверка в кэше если не найден
+    if(RQ_STATUS!=200):
+        ERROR_CONTEXT="URL: "+URL+", CODE: "+RQ_STATUS+";"
+        modules.journalD(6,CONTENT_SOURCE,ERROR_CONTEXT)
+        #высылка в сисьлох
+    JQ=json.loads(CURL.text)
+    JQa=JQ
+    for i in JQa:
+        i['teacher_id']=teacher_id
+        i['teacher_name']=getTeacherNameByID(teacher_id)
+        print(i)
+        
+        pass
+    RETURN_CONTENT={'timestamp':time.time(),'time':TIME_NOW,'status':RQ_STATUS,'content':JQ}
+
 
 def compileGroupList(sublist, grouplist):
     #1## Группа по номеру G6265 // 'G\d+'
@@ -202,9 +132,10 @@ def compileGroupList(sublist, grouplist):
     
     return set(returnlist)
 
-teachersJSON=getFromCache('https://portal.kuzstu.ru/api/teachers',3600*24)
-groupsJSON=getFromCache('https://portal.kuzstu.ru/api/group',3600*24*7)
 
+
+
+'''
 teachersList=json.loads(teachersJSON)
 groupsList=json.loads(groupsJSON)
 
@@ -213,8 +144,9 @@ print(SUBSCRIBERS_LIST)
 print(SUBSCOMPILED_LIST)
 #print(groupsList)
 tsopa=getByGroup_ID(5833)
-
+'''
 #print(tsopa['content'])
+getTeacherShudleByUID(101040)
 
-#getFromCache("https://portal.kuzstu.ru/api/group",3600*24)
+#modules.getFromCache("https://portal.kuzstu.ru/api/group",3600*24)
 pass
