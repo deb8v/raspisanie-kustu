@@ -23,8 +23,8 @@ groupsJSON=json.loads(modules.getFromCache('https://portal.kuzstu.ru/api/group',
 
 TIME_FORMAT='%X %x %Z'
 
-#SUBSCRIBERS_LIST=["G6265","КСс-211","УКб",'ТЭ',"T17453","Малюгин"]
-SUBSCRIBERS_LIST=["G6265","КСс-211","T17453","Мал"]
+SUBSCRIBERS_LIST=["G6265","КСс-211","УКб",'ТЭ',"T17453","Малюгин"]
+#SUBSCRIBERS_LIST=["G6265","КСс-211","T17453","Мал"]
 SUBSCOMPILED_LIST=list()
 
 
