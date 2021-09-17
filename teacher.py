@@ -13,9 +13,10 @@ import re
 import modules
 #PERSONS_PATH=
 
+CACHE_DIR="docs/"
+modules.cacheDir(CACHE_DIR);
 
-modules.cfg()
-modules.modules.getFromCache()
+
 
 teachersJSON=modules.getFromCache('https://portal.kuzstu.ru/api/teachers',3600*24)
 groupsJSON=modules.getFromCache('https://portal.kuzstu.ru/api/group',3600*24*7)
@@ -31,7 +32,10 @@ SUBSCOMPILED_LIST=list()
 
 
 
-
+def getTeacherIDByName(pripoduname):
+    for i in teachersJSON:
+        if i['name']==pripoduname:
+            return i['person_id']
     
 def getTeacherNameByID(pripoduid):
     for i in teachersJSON:
@@ -146,7 +150,10 @@ print(SUBSCOMPILED_LIST)
 tsopa=getByGroup_ID(5833)
 '''
 #print(tsopa['content'])
-getTeacherShudleByUID(101040)
+#getTeacherShudleByUID(101040)
+
+
+
 
 #modules.getFromCache("https://portal.kuzstu.ru/api/group",3600*24)
 pass

@@ -22,7 +22,7 @@ def journalD(pex,source,meta):
 
 def getFromCache(url,expieri):
     CONTENT_SOURCE="CACHE_MODULE"
-    def is_accessible(path, mode='w'):
+    def is_accessible(path, mode='a'):
         try:
             f = open(path, mode)
             f.close()
@@ -63,14 +63,22 @@ def getFromCache(url,expieri):
                 journalD(1,CONTENT_SOURCE,ERROR_CONTEXT)
                 return "ERR"
     def getModifTime(path):
-        cont=open(path,'r')
+        cont=open('docs/e621c5499e18d482dbc52c2c666344c8.bak','r')
+        print(os.listdir('docs'))
+        #cont=open(path,'r')
+        ra=cont.read()
         try:
-            editt=json.loads(cont.read())['modified']
-        except JSONDecodeError:
-            cont.close();
+            editt=json.loads(ra)
+            rra=editt['modified']
+            print(rra)
+            
+        except TypeError:
+            pass
+        #except JSONDecodeError:
+        #    cont.close();
             return 0;
         cont.close();
-        return editt
+        return rra
 
     def getFile(path):
         cont=open(path,'r')
@@ -100,25 +108,24 @@ def getFromCache(url,expieri):
         journalD(3,CONTENT_SOURCE,ERROR_CONTEXT)
         notWritable=True
         downloadEnyvere=True
+        return readFromUrl(url=url)
     deltatime=None
     if(fileStatus): #если доступен на запись
         mtime=getModifTime(path)
         deltatime=timenow-mtime
         deltatime=abs(deltatime)
-        
-    print(timenow,mtime,deltatime)
-    if(not notWritable):
-     if(deltatime>expieri or downloadEnyvere):
-        download(url=url,path=path)
-        mtime=getModifTime(path)
-        deltatime=timenow-mtime
-        deltatime=abs(deltatime)
-        print(timenow,mtime,deltatime)
-     else:
-        if(notWritable):
-            return readFromUrl(url=url)
-        else:
-            return getFile(path)
+        print('NOW:',timenow,"MOD: ",mtime, "DT:",deltatime,'EXPFOR:',expieri)
+        if(deltatime>expieri):
+            download(url=url,path=path)
+        return getFile(path)
+
+def test():
+    print("R1t")
+    teachersJSON=getFromCache('https://portal.kuzstu.ru/api/teachers',3600*24)
+    print("R2t")
+    teachersJSON=getFromCache('https://portal.kuzstu.ru/api/teachers',3600*24)
+            
+test();
     ## 1 - проверяем наличие файла
     ## 2 - проверяем его актуальность
     ## 3 - качаем
