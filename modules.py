@@ -1,25 +1,10 @@
 from json.decoder import JSONDecodeError
-import re
 import requests
-from bs4 import BeautifulSoup as bs
-import os
 import json
-import datetime
 import hashlib
-import codecs
 import time
-import re
 import sys
 
-import requests
-import sys
-import time
-
-
-import json
-
-from time import sleep
-from sys import stdout
 CACHE_DIR="docs/"
 
 
@@ -92,13 +77,13 @@ def getFromCache(url,expieri):
                     fSize='%.1fМБ: ' % (sizee*0.00000095)
                     
 
-                    linesize=15
+                    linesize=10
                     done=int(mapd(dl,0,int(total_length),0,linesize))
                     undone=linesize-done
                     print("\r>"+str(fSize)+"МБ [%s%s] %s Мб/с, %s" % ('=' * done, ' ' * undone, dl*0.0000076//(time.time() - start),filename)+""+"\r",end='')
                     sys.stdout.flush()
                 
-                fileStructure={"modified":time.time(),'url':url,'path':path,'text':str(filetemp.decode())}
+                fileStructure={"modified":time.time(),'url':url,'path':path,'text':str(filetemp.decode('ansi'))}
                 f.write(json.dumps(fileStructure))
                 f.close()
                 print()        
@@ -167,7 +152,7 @@ def test():
     teachersJSON=getFromCache('https://portal.kuzstu.ru/api/teachers',3600*24)
     getFromCache('https://portal.kuzstu.ru/file/get/169315.rtf',200)
             
-#test();
+test();
     ## 1 - проверяем наличие файла
     ## 2 - проверяем его актуальность
     ## 3 - качаем

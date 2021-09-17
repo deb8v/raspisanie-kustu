@@ -1,6 +1,7 @@
 # -*- coding: utf8 -*-
 from json.decoder import JSONDecodeError
 import re
+from asyncio.runners import run
 import requests
 from bs4 import BeautifulSoup as bs
 import os
@@ -23,8 +24,8 @@ groupsJSON=json.loads(modules.getFromCache('https://portal.kuzstu.ru/api/group',
 
 TIME_FORMAT='%X %x %Z'
 
-SUBSCRIBERS_LIST=["G6265","КСс-211","УКб",'ТЭ',"T17453","Малюгин"]
-#SUBSCRIBERS_LIST=["G6265","КСс-211","T17453","Мал"]
+#SUBSCRIBERS_LIST=["G6265","КСс-211","УКб",'ТЭ',"T17453","Малюгин",' ']
+SUBSCRIBERS_LIST=["G6265","КСс-211","T17453","Мал"]
 SUBSCOMPILED_LIST=list()
 
 
@@ -142,12 +143,12 @@ def makeResponse(SUBSCRIBERS_LIST=SUBSCRIBERS_LIST):
 
 #print(tsopa['content'])
 #tsopa=getByGroup_ID(5833)
-t0=time.time()
-adax=makeResponse(SUBSCRIBERS_LIST)
-t1=time.time()
-dt=t1-t0
-print(dt)
 
+import threading
 
+def fd3(f):
+        print(makeResponse(SUBSCRIBERS_LIST))
+        
+    
 
 pass
