@@ -28,17 +28,9 @@ SUBSCRIBERS_LIST=["G6265","КСс-211","T17453","Мал"]
 SUBSCOMPILED_LIST=list()
 
 
-
-
-
-
-
-
-
-
 def getByGroup_ID(group_id):
-    #5833
-    RQ_STATUS=0;
+   
+    RQ_STATUS=201; # в будущем указыввает источник, из каши или прямым запросом
     
     
     TIME_NOW=time.strftime(TIME_FORMAT)
@@ -57,7 +49,7 @@ def getByGroup_ID(group_id):
     return RETURN_CONTENT
 
 def getTeacherShudleByUID(teacher_id):
-    
+    RQ_STATUS=201;
     CONTENT_SOURCE="GET_TEACHER_BY_UID"
     TIME_NOW=time.strftime(TIME_FORMAT)
 
@@ -68,17 +60,8 @@ def getTeacherShudleByUID(teacher_id):
 
     #https://portal.kuzstu.ru/api/teacher_schedule?teacher_id=101040
     URL='https://portal.kuzstu.ru/api/teacher_schedule?teacher_id={teacher_id}'.format(teacher_id=teacher_id)
-    CURL=requests.get(URL)
-    RQ_STATUS=CURL.status_code
-    if(RQ_STATUS==404):
-        ERROR_CONTEXT="URL: "+URL+", CODE: "+RQ_STATUS+"; NOT FOUND;"
-        modules.journalD(1,CONTENT_SOURCE,ERROR_CONTEXT)
-        #проверка в кэше если не найден
-    if(RQ_STATUS!=200):
-        ERROR_CONTEXT="URL: "+URL+", CODE: "+RQ_STATUS+";"
-        modules.journalD(6,CONTENT_SOURCE,ERROR_CONTEXT)
-        #высылка в сисьлох
-    JQ=json.loads(CURL.text)
+    
+    JQ=json.loads(modules.getFromCache(URL,1000))
     JQo=list()
     teacherName=getTeacherNameByID(teacher_id)
     for i in JQ:
@@ -114,21 +97,12 @@ def compileGroupList(sublist, grouplist):
     
 
     def findNumByText(text):
-        #print(text)
-        counter=0
-        findlist=[]
         for d in grouplist:
-
-            #print(d)
             name=str(d["name"])
             #\D{3,5}-\d{3}
             ax = re.search(text+regexpType2, name)
             at=1
-            #if(ax!=1 and text.find(name)!=-1):at=1
-            #print(name)
-            #print(d["dept_id"],d["name"],'text:',text)
             if ax!=None:
-                #print(ax)
                 conntent=d["dept_id"]
                 returnlist.append(int( "".join(re.findall("\d+", conntent))))    
                 
@@ -141,10 +115,7 @@ def compileGroupList(sublist, grouplist):
             returnlist.append(-int( "".join(re.findall("\d+", rt1T))))
         findNumByText(subject)
         getTeacherIDByName(subject)
-        #for rt2 in re.findall(regexpType2,subject):
-        #    returnlist.append(int(rt1))
-        
-    
+            
     return set(returnlist)
 
 
@@ -171,10 +142,12 @@ def makeResponse(SUBSCRIBERS_LIST=SUBSCRIBERS_LIST):
 
 #print(tsopa['content'])
 #tsopa=getByGroup_ID(5833)
+t0=time.time()
 adax=makeResponse(SUBSCRIBERS_LIST)
+t1=time.time()
+dt=t1-t0
+print(dt)
 
 
 
-
-#modules.getFromCache("https://portal.kuzstu.ru/api/group",3600*24)
 pass
