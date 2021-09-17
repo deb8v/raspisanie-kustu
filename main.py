@@ -46,9 +46,13 @@ def getByGroup_ID(group_id):
     CONTENT_SOURCE="GROUP_PARSER"
     URL="https://portal.kuzstu.ru/api/student_schedule?group_id={group_id}".format(group_id=group_id)
     
-    
+    def getGroupNameByID(pripoduid):
+        for i in groupsJSON:
+            if i['dept_id']==str(pripoduid):
+                return i['name']
+
     JQ=json.loads(modules.getFromCache(URL,1000))
-    RETURN_CONTENT={'timestamp':time.time(),'time':TIME_NOW,'status':RQ_STATUS,'content':JQ}
+    RETURN_CONTENT={'timestamp':time.time(),'time':TIME_NOW,'status':RQ_STATUS,'id':group_id,'name':getGroupNameByID(group_id),'content':JQ}
 
     return RETURN_CONTENT
 
@@ -76,13 +80,14 @@ def getTeacherShudleByUID(teacher_id):
         #высылка в сисьлох
     JQ=json.loads(CURL.text)
     JQo=list()
+    teacherName=getTeacherNameByID(teacher_id)
     for i in JQ:
         i['teacher_id']=teacher_id
-        i['teacher_name']=getTeacherNameByID(teacher_id)
+        i['teacher_name']=teacherName
         #print(i)
         JQo.append(i)
         pass
-    RETURN_CONTENT={'timestamp':time.time(),'time':TIME_NOW,'status':RQ_STATUS,'content':JQo}
+    RETURN_CONTENT={'timestamp':time.time(),'time':TIME_NOW,'status':RQ_STATUS,'id':teacher_id,'name':teacherName,'content':JQo}
     return RETURN_CONTENT
 
 
@@ -143,20 +148,30 @@ def compileGroupList(sublist, grouplist):
     return set(returnlist)
 
 
+def makeResponse(SUBSCRIBERS_LIST=SUBSCRIBERS_LIST):
+    SUBSCOMPILED_LIST = compileGroupList(SUBSCRIBERS_LIST,groupsJSON)
+    print(SUBSCRIBERS_LIST)
+    print(SUBSCOMPILED_LIST)
+
+    output=list()
+    for i in SUBSCOMPILED_LIST:
+        temp=list();
+        if(i>0):
+            temp=getByGroup_ID(i)
+        if(i<0):
+            temp=getTeacherShudleByUID(i*-1)
+        output.append(temp)
+    return output
 
 
 
 
-
-SUBSCOMPILED_LIST = compileGroupList(SUBSCRIBERS_LIST,groupsJSON)
-print(SUBSCRIBERS_LIST)
-print(SUBSCOMPILED_LIST)
 #print(groupsJSON)
 
 
 #print(tsopa['content'])
 #tsopa=getByGroup_ID(5833)
-getTeacherShudleByUID(19514)
+adax=makeResponse(SUBSCRIBERS_LIST)
 
 
 
