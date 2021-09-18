@@ -12,10 +12,12 @@ import codecs
 import time
 import re
 import modules
+import icalendar
 #PERSONS_PATH=
 
 CACHE_DIR="docs/"
-modules.cacheDir(CACHE_DIR);
+modules.cacheDir(CACHE_DIR)
+
 
 
 
@@ -29,6 +31,7 @@ TIME_FORMAT='0:%Y-%m-%d %H:%M:%S'
 #SUBSCRIBERS_LIST=["G6265","КСс-211","УКб",'ТЭ',"T17453","Малюгин",' ']
 #SUBSCRIBERS_LIST=["G6265","КСс-211","T17453","Мал"]
 SUBSCRIBERS_LIST=["G6265"]
+#SUBSCRIBERS_LIST=["УКб"]
 SUBSCOMPILED_LIST=list()
 
 
@@ -156,5 +159,9 @@ def makeICS(id):
         
 f=(makeResponse(SUBSCRIBERS_LIST))
 open("tests/democal.json",'w').write(json.dumps(f))
+
+
+pathToIcs='U:/raspis/my.ics'
+icalendar.makeCalendar(f,pathToIcs)
 
 pass
