@@ -22,10 +22,13 @@ modules.cacheDir(CACHE_DIR);
 teachersJSON=json.loads(modules.getFromCache('https://portal.kuzstu.ru/api/teachers',3600*24))
 groupsJSON=json.loads(modules.getFromCache('https://portal.kuzstu.ru/api/group',3600*24*7))
 
-TIME_FORMAT='%X %x %Z'
+#TIME_FORMAT='%X %x %Z'
+TIME_FORMAT='0:%Y-%m-%d %H:%M:%S'
+#YYYY-MM-DD HH:mm
 
 #SUBSCRIBERS_LIST=["G6265","КСс-211","УКб",'ТЭ',"T17453","Малюгин",' ']
-SUBSCRIBERS_LIST=["G6265","КСс-211","T17453","Мал"]
+#SUBSCRIBERS_LIST=["G6265","КСс-211","T17453","Мал"]
+SUBSCRIBERS_LIST=["G6265"]
 SUBSCOMPILED_LIST=list()
 
 
@@ -135,7 +138,13 @@ def makeResponse(SUBSCRIBERS_LIST=SUBSCRIBERS_LIST):
         output.append(temp)
     return output
 
-
+def makeICS(id):
+    temp=dict()
+    if(id>0):
+        temp=getByGroup_ID(id)
+    if(id<0):
+        temp=getTeacherShudleByUID(id*-1)
+#    for 
 
 
 #print(groupsJSON)
@@ -144,11 +153,8 @@ def makeResponse(SUBSCRIBERS_LIST=SUBSCRIBERS_LIST):
 #print(tsopa['content'])
 #tsopa=getByGroup_ID(5833)
 
-import threading
-
-def fd3(f):
-        print(makeResponse(SUBSCRIBERS_LIST))
         
-    
+f=(makeResponse(SUBSCRIBERS_LIST))
+open("tests/democal.json",'w').write(json.dumps(f))
 
 pass
