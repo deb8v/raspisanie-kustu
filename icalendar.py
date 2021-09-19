@@ -41,7 +41,7 @@ addresses={
         organizer (Optional[Organizer]) –
         classification (Optional[str]) –
 """
-def makeCalendar(dict,path):
+def genCalendar(dict):
     c = Calendar()
     def toAddr(p):
         try:
@@ -54,11 +54,16 @@ def makeCalendar(dict,path):
     for i in dict:
         
         categories=i['name']
+        isTeacher=i['isteacher']
+        
         for content in i['content']:
             e = Event()
             e.uid=content['id']
             e.categories=content['subgroup']
-            e.name = "["+ content['lesson_number'] +"] "+content['place']+" - "+content['subject'] +", "+content['type']+''
+            gn=''
+            if(isTeacher==True):
+                gn=content['education_group_name']+" "
+            e.name = "["+ content['lesson_number'] +"] "+content['place']+" - "+gn+content['type']+content['subject'] +", "+''
             
             begin=content['date_lesson']+" "+dictCallstring[int(content['lesson_number'])-1][0]#без смещения зоны в Z0
             beginD = datetime.datetime.strptime(begin, "%Y-%m-%d %H:%M")-datetime.timedelta(hours=7)
@@ -72,12 +77,15 @@ def makeCalendar(dict,path):
             
             e.location=toAddr(content['place'])
             c.events.add(e)
-    print(c.events)
+    #print(c.events)
     # [<Event 'My cool event' begin:2014-01-01 00:00:00 end:2014-01-01 00:00:01>]
-    with open(path, 'w',encoding='utf8') as my_file:
-        my_file.writelines(c)
+    return c
     # and it's done !
-
+def makeCalendar(dict,path):
+    
+    with open(path, 'w',encoding='utf8') as my_file:
+        my_file.writelines(genCalendar(dict))
 #rc=json.loads(open('tests/democal.json','r').read())
 #path='U:/raspis/my.ics'
-#makeCalendar(rc,path)
+#y=makeCalendar(rc,path)
+pass

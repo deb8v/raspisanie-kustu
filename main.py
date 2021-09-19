@@ -18,11 +18,13 @@ import icalendar
 CACHE_DIR="docs/"
 modules.cacheDir(CACHE_DIR)
 
-
-
-
 teachersJSON=json.loads(modules.getFromCache('https://portal.kuzstu.ru/api/teachers',3600*24))
 groupsJSON=json.loads(modules.getFromCache('https://portal.kuzstu.ru/api/group',3600*24*7))
+
+def validStatic():
+
+    teachersJSON=json.loads(modules.getFromCache('https://portal.kuzstu.ru/api/teachers',3600*24))
+    groupsJSON=json.loads(modules.getFromCache('https://portal.kuzstu.ru/api/group',3600*24*7))
 
 #TIME_FORMAT='%X %x %Z'
 TIME_FORMAT='0:%Y-%m-%d %H:%M:%S'
@@ -30,7 +32,7 @@ TIME_FORMAT='0:%Y-%m-%d %H:%M:%S'
 
 #SUBSCRIBERS_LIST=["G6265","КСс-211","УКб",'ТЭ',"T17453","Малюгин",' ']
 #SUBSCRIBERS_LIST=["G6265","КСс-211","T17453","Мал"]
-SUBSCRIBERS_LIST=["G6265"]
+SUBSCRIBERS_LIST=["G6265","Малюгин"]
 #SUBSCRIBERS_LIST=["УКб"]
 SUBSCOMPILED_LIST=list()
 
@@ -51,7 +53,7 @@ def getByGroup_ID(group_id):
                 return i['name']
 
     JQ=json.loads(modules.getFromCache(URL,1000))
-    RETURN_CONTENT={'timestamp':time.time(),'time':TIME_NOW,'status':RQ_STATUS,'id':group_id,'name':getGroupNameByID(group_id),'content':JQ}
+    RETURN_CONTENT={'timestamp':time.time(),'time':TIME_NOW,'status':RQ_STATUS,'id':group_id,'name':getGroupNameByID(group_id),'isteacher':False,'content':JQ}
 
     return RETURN_CONTENT
 
@@ -77,7 +79,7 @@ def getTeacherShudleByUID(teacher_id):
         #print(i)
         JQo.append(i)
         pass
-    RETURN_CONTENT={'timestamp':time.time(),'time':TIME_NOW,'status':RQ_STATUS,'id':teacher_id,'name':teacherName,'content':JQo}
+    RETURN_CONTENT={'timestamp':time.time(),'time':TIME_NOW,'status':RQ_STATUS,'id':teacher_id,'name':teacherName,'isteacher':True,'content':JQo,}
     return RETURN_CONTENT
 
 
@@ -128,8 +130,8 @@ def compileGroupList(sublist, grouplist):
 
 def makeResponse(SUBSCRIBERS_LIST=SUBSCRIBERS_LIST):
     SUBSCOMPILED_LIST = compileGroupList(SUBSCRIBERS_LIST,groupsJSON)
-    print(SUBSCRIBERS_LIST)
-    print(SUBSCOMPILED_LIST)
+    print(">>>",SUBSCRIBERS_LIST)
+    print("<<<",SUBSCOMPILED_LIST)
 
     output=list()
     for i in SUBSCOMPILED_LIST:
@@ -157,11 +159,11 @@ def makeICS(id):
 #tsopa=getByGroup_ID(5833)
 
         
-f=(makeResponse(SUBSCRIBERS_LIST))
-open("tests/democal.json",'w').write(json.dumps(f))
+#f=(makeResponse(SUBSCRIBERS_LIST))
+#open("tests/democal.json",'w').write(json.dumps(f))
 
 
-pathToIcs='U:/raspis/my.ics'
-icalendar.makeCalendar(f,pathToIcs)
+#pathToIcs='U:/raspis/my.ics'
+#icalendar.makeCalendar(f,pathToIcs)
 
 pass
