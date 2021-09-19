@@ -52,7 +52,7 @@ def getByGroup_ID(group_id):
             if i['dept_id']==str(pripoduid):
                 return i['name']
 
-    JQ=json.loads(modules.getFromCache(URL,1000))
+    JQ=json.loads(modules.getFromCache(URL,4*3600))
     RETURN_CONTENT={'timestamp':time.time(),'time':TIME_NOW,'status':RQ_STATUS,'id':group_id,'name':getGroupNameByID(group_id),'isteacher':False,'content':JQ}
 
     return RETURN_CONTENT
@@ -128,12 +128,19 @@ def compileGroupList(sublist, grouplist):
     return set(returnlist)
 
 
-def makeResponse(SUBSCRIBERS_LIST=SUBSCRIBERS_LIST):
+def makeResponse(SUBSCRIBERS_LIST=SUBSCRIBERS_LIST,limit=5):
     SUBSCOMPILED_LIST = compileGroupList(SUBSCRIBERS_LIST,groupsJSON)
-    print(">>>",SUBSCRIBERS_LIST)
-    print("<<<",SUBSCOMPILED_LIST)
-
+    print("<<<",SUBSCRIBERS_LIST)
+    print("---",SUBSCOMPILED_LIST)
+    #if(len(SUBSCOMPILED_LIST)>limit):
+    #    return None
+    #SUBSCOMPILED_LIST=
+    SUBSCOMPILED_LIST=list(SUBSCOMPILED_LIST)[0:limit]
+    print(">>>",SUBSCOMPILED_LIST,'l=',limit)
+#    DICKTLIMITIED=dict(SUBSCOMPILED_LIST)[0:limit]
     output=list()
+    pass
+
     for i in SUBSCOMPILED_LIST:
         temp=list();
         if(i>0):

@@ -83,7 +83,7 @@ def getFromCache(url,expieri):
                     print("\r>"+str(fSize)+"МБ [%s%s] %s Мб/с, %s" % ('=' * done, ' ' * undone, dl*0.0000076//(time.time() - start),filename)+""+"\r",end='')
                     sys.stdout.flush()
                 
-                fileStructure={"modified":time.time(),'url':url,'path':path,'text':str(filetemp.decode('ansi'))}
+                fileStructure={"modified":time.time(),'url':url,'path':path,'text':str(filetemp.decode('cp1251'))}
                 f.write(json.dumps(fileStructure))
                 f.close()
                 print()        
@@ -152,7 +152,7 @@ def test():
     teachersJSON=getFromCache('https://portal.kuzstu.ru/api/teachers',3600*24)
     getFromCache('https://portal.kuzstu.ru/file/get/169315.rtf',200)
             
-test();
+#test();
     ## 1 - проверяем наличие файла
     ## 2 - проверяем его актуальность
     ## 3 - качаем

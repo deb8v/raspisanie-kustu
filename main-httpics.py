@@ -11,7 +11,7 @@ from requests import utils as rutils
 
 def processor(gl):
     
-    f=main.makeResponse(gl)
+    f=main.makeResponse(gl,limit=1)
     #open("tests/democal.json",'w').write(json.dumps(f))
     s=icalendar.genCalendar(f)
     return s
@@ -24,8 +24,8 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
     # определяем метод `do_GET` 
     def do_GET(self):
         self.send_response(200)
-        self.send_header('Content-type', 'text/html')
-        #self.end_headers('content-length','1000')
+        self.send_header('Content-type', 'text/plain; charset=utf-8')
+        self.end_headers()
         
         txt=rutils.unquote(self.path)
         try:
@@ -44,5 +44,5 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
             self.wfile.write(bytes('error'.encode('utf8')))
         pass
 
-httpd = HTTPServer(('192.168.2.195', 8000), SimpleHTTPRequestHandler)
+httpd = HTTPServer(('2sdpa.18b', 8000), SimpleHTTPRequestHandler)
 httpd.serve_forever()

@@ -60,6 +60,7 @@ def genCalendar(dict):
             e = Event()
             e.uid=content['id']
             e.categories=content['subgroup']
+
             gn=''
             if(isTeacher==True):
                 gn=content['education_group_name']+" "
@@ -67,7 +68,7 @@ def genCalendar(dict):
             
             begin=content['date_lesson']+" "+dictCallstring[int(content['lesson_number'])-1][0]#без смещения зоны в Z0
             beginD = datetime.datetime.strptime(begin, "%Y-%m-%d %H:%M")-datetime.timedelta(hours=7)
-
+            
             end=content['date_lesson']+" "+dictCallstring[int(content['lesson_number'])-1][1]#без смещения зоны в Z0
             endD = datetime.datetime.strptime(end, "%Y-%m-%d %H:%M")-datetime.timedelta(hours=7)
             
@@ -75,6 +76,8 @@ def genCalendar(dict):
             
             e.end= endD
             
+            e.organizer=content['teacher_name']
+
             e.location=toAddr(content['place'])
             c.events.add(e)
     #print(c.events)
