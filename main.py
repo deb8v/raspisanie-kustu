@@ -27,7 +27,7 @@ def validStatic():
     groupsJSON=json.loads(modules.getFromCache('https://portal.kuzstu.ru/api/group',3600*24*7))
 
 #TIME_FORMAT='%X %x %Z'
-TIME_FORMAT='0:%Y-%m-%d %H:%M:%S'
+TIME_FORMAT='%Y-%m-%d %H:%M:%S'
 #YYYY-MM-DD HH:mm
 
 #SUBSCRIBERS_LIST=["G6265","КСс-211","УКб",'ТЭ',"T17453","Малюгин",' ']
@@ -36,7 +36,38 @@ SUBSCRIBERS_LIST=["G6265","Малюгин"]
 #SUBSCRIBERS_LIST=["УКб"]
 SUBSCOMPILED_LIST=list()
 
+def getFNameByID(ID):
+    if(ID<0):
+        for i in teachersJSON:
+            if(i['person_id']==str(ID*-1)):
+                return i['name']
+        
+    else:
+        for i in groupsJSON:
+            if(i['dept_id']==str(ID)):
+                return i['name']
+    return None
 
+def editRP(parms):
+    editparams={'place':'залупа'}
+    for i in range(0,len(parms)):
+        if parms[i]['id']=="2674553":
+            parms[i]['lesson_number']= 5
+    '''
+    date_lesson: "2021-10-15"
+    day_number: "5"
+    education_group_id: "6265"
+    education_group_name: "КСс-211"
+    id: "2684840"
+    lesson_number: "4"
+    place: "3001а"
+    subgroup: "0"
+    subject: "Введение в специальность"
+    teacher_id: "18927"
+    teacher_name: "Коротков А.Н."
+    type: "л."
+    '''
+    return parms
 def getByGroup_ID(group_id):
    
     RQ_STATUS=201; # в будущем указыввает источник, из каши или прямым запросом
@@ -49,10 +80,12 @@ def getByGroup_ID(group_id):
     
     def getGroupNameByID(pripoduid):
         for i in groupsJSON:
+            
             if i['dept_id']==str(pripoduid):
                 return i['name']
 
-    JQ=json.loads(modules.getFromCache(URL,4*3600))
+    JQ=editRP(json.loads(modules.getFromCache(URL,4*3600)))
+    print('девять')
     RETURN_CONTENT={'timestamp':time.time(),'time':TIME_NOW,'status':RQ_STATUS,'id':group_id,'name':getGroupNameByID(group_id),'isteacher':False,'content':JQ}
 
     return RETURN_CONTENT
@@ -74,16 +107,17 @@ def getTeacherShudleByUID(teacher_id):
     JQo=list()
     teacherName=getTeacherNameByID(teacher_id)
     for i in JQ:
-        i['teacher_id']=teacher_id
+        i['teacher_id']=str(teacher_id)
         i['teacher_name']=teacherName
         #print(i)
         JQo.append(i)
         pass
     RETURN_CONTENT={'timestamp':time.time(),'time':TIME_NOW,'status':RQ_STATUS,'id':teacher_id,'name':teacherName,'isteacher':True,'content':JQo,}
+    
     return RETURN_CONTENT
 
 
-def compileGroupList(sublist, grouplist):
+def compileGroupList(sublist):
     #1## Группа по номеру G6265 // 'G\d+'
     #2## Группа по тексту КСс-211
     #3## Лист по своей регулярке
@@ -98,7 +132,8 @@ def compileGroupList(sublist, grouplist):
 
     def getTeacherIDByName(pripoduname):
         for i in teachersJSON:
-            ra=i['name'].find(pripoduname)
+            pripoduname=str(pripoduname).lower()
+            ra=str(i['name']).lower().find(pripoduname)
             if ra>-1:
                 returnlist.append(-int( "".join(re.findall("\d+", i['person_id']))))    
                 
@@ -106,11 +141,13 @@ def compileGroupList(sublist, grouplist):
     
 
     def findNumByText(text):
-        for d in grouplist:
-            name=str(d["name"])
+        for d in groupsJSON:
+            name=str(d["name"]).lower()
+            text=str(text).lower()
             #\D{3,5}-\d{3}
             ax = re.search(text+regexpType2, name)
             at=1
+            
             if ax!=None:
                 conntent=d["dept_id"]
                 returnlist.append(int( "".join(re.findall("\d+", conntent))))    
@@ -129,7 +166,7 @@ def compileGroupList(sublist, grouplist):
 
 
 def makeResponse(SUBSCRIBERS_LIST=SUBSCRIBERS_LIST,limit=5):
-    SUBSCOMPILED_LIST = compileGroupList(SUBSCRIBERS_LIST,groupsJSON)
+    SUBSCOMPILED_LIST = compileGroupList(SUBSCRIBERS_LIST)
     print("<<<",SUBSCRIBERS_LIST)
     print("---",SUBSCOMPILED_LIST)
     #if(len(SUBSCOMPILED_LIST)>limit):
