@@ -105,7 +105,7 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
                     self.wfile.write(bytes(str(processor(reqggroup)).encode("utf8")))
                 if(txt.find('/icsshudle/web-api/')>-1):
                     self.send_header('Content-type', 'application/json; charset=utf-8')
-                    self.send_header("Access-Control-Allow-Methods", 'GET')
+                    self.send_header("Access-Control-Allow-Methods", '*')
                     self.send_header("Access-Control-Allow-Origin", '*')
                     
                     
@@ -134,4 +134,7 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
         pass
 
 httpd = HTTPServer(('', 8000), SimpleHTTPRequestHandler)
+
 httpd.serve_forever()
+
+

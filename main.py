@@ -13,6 +13,7 @@ import time
 import re
 import modules
 import icalendar
+import random
 #PERSONS_PATH=
 
 CACHE_DIR="docs/"
@@ -51,8 +52,11 @@ def getFNameByID(ID):
 def editRP(parms):
     editparams={'place':'залупа'}
     for i in range(0,len(parms)):
-        if parms[i]['id']=="2674553":
-            parms[i]['lesson_number']= 5
+        
+        if str(parms[i]['teacher_name']).find("Коротков")>-1:
+            parms[i]['comments']=[["Кто видел короткова?",'Никто'],['Да кто такой этот ваш коротков!']][random.randint(0,1)]
+            pass
+    #Вот тут вот можно что нибудь редактировать, полнлостью, потом это будет в возможностях преподских
     '''
     date_lesson: "2021-10-15"
     day_number: "5"
@@ -84,9 +88,9 @@ def getByGroup_ID(group_id):
             if i['dept_id']==str(pripoduid):
                 return i['name']
 
-    JQ=editRP(json.loads(modules.getFromCache(URL,4*3600)))
+    JQ=json.loads(modules.getFromCache(URL,4*3600))
     print('девять')
-    RETURN_CONTENT={'timestamp':time.time(),'time':TIME_NOW,'status':RQ_STATUS,'id':group_id,'name':getGroupNameByID(group_id),'isteacher':False,'content':JQ}
+    RETURN_CONTENT={'timestamp':time.time(),'time':TIME_NOW,'status':RQ_STATUS,'id':group_id,'name':getGroupNameByID(group_id),'isteacher':False,'content':editRP(JQ)}
 
     return RETURN_CONTENT
 
@@ -112,7 +116,7 @@ def getTeacherShudleByUID(teacher_id):
         #print(i)
         JQo.append(i)
         pass
-    RETURN_CONTENT={'timestamp':time.time(),'time':TIME_NOW,'status':RQ_STATUS,'id':teacher_id,'name':teacherName,'isteacher':True,'content':JQo,}
+    RETURN_CONTENT={'timestamp':time.time(),'time':TIME_NOW,'status':RQ_STATUS,'id':teacher_id,'name':teacherName,'isteacher':True,'content':editRP(JQo),}
     
     return RETURN_CONTENT
 
