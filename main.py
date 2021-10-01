@@ -53,9 +53,13 @@ def editRP(parms):
     editparams={'place':'залупа'}
     for i in range(0,len(parms)):
         
-        if str(parms[i]['teacher_name']).find("Коротков")>-1:
+        if str(parms[i]['teacher_name']).find("Коротков В")>-1:
             parms[i]['comments']=[["Кто видел короткова?",'Никто'],['Да кто такой этот ваш коротков!']][random.randint(0,1)]
             pass
+        strd=str(parms[i]['education_group_name'])
+        if(strd.find('з')>-1):
+            strd
+            print(strd);
     #Вот тут вот можно что нибудь редактировать, полнлостью, потом это будет в возможностях преподских
     '''
     date_lesson: "2021-10-15"
@@ -84,12 +88,13 @@ def getByGroup_ID(group_id):
     
     def getGroupNameByID(pripoduid):
         for i in groupsJSON:
-            
+            #'source':"Расписание занятий"
             if i['dept_id']==str(pripoduid):
                 return i['name']
 
     JQ=json.loads(modules.getFromCache(URL,4*3600))
-    print('девять')
+    for z in range(0,len(JQ)):
+        JQ[z]['source']="Расписание занятий"
     RETURN_CONTENT={'timestamp':time.time(),'time':TIME_NOW,'status':RQ_STATUS,'id':group_id,'name':getGroupNameByID(group_id),'isteacher':False,'content':editRP(JQ)}
 
     return RETURN_CONTENT
@@ -111,11 +116,13 @@ def getTeacherShudleByUID(teacher_id):
     JQo=list()
     teacherName=getTeacherNameByID(teacher_id)
     for i in JQ:
+        i['source']="Расписание занятий"
         i['teacher_id']=str(teacher_id)
         i['teacher_name']=teacherName
         #print(i)
         JQo.append(i)
         pass
+    
     RETURN_CONTENT={'timestamp':time.time(),'time':TIME_NOW,'status':RQ_STATUS,'id':teacher_id,'name':teacherName,'isteacher':True,'content':editRP(JQo),}
     
     return RETURN_CONTENT

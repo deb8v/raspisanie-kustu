@@ -17,7 +17,7 @@ def journalD(pex,source,meta):
     print(source,'\t',meta,end=str(pex))
 
 
-def getFromCache(url,expieri):
+def getFromCache(url,expieri,checkError=True):
     CONTENT_SOURCE="CACHE_MODULE"
     def is_accessible(path, mode='a'):
         try:
@@ -136,6 +136,11 @@ def getFromCache(url,expieri):
         downloadEnyvere=True
         return readFromUrl(url=url)
     deltatime=None
+    '''
+    Тут вот ебануть мол доколе не можем скачать выкидываем нахуй.
+    Т.е. качаем по умолчанию в md5.temp.txt если всё збс копируем.
+    Иначе высылаем то что есть с пометкой
+    '''
     if(fileStatus): #если доступен на запись
         mtime=getModifTime(path)
         deltatime=timenow-mtime

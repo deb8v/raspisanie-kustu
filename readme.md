@@ -49,3 +49,10 @@ https://portal.kuzstu.ru/api/teachers
 1 - теперь в main для main.compileGroupList() не нужно указывать на конкретный список групп, он берётся из указанных в main.validStatic() объектов
 
 2 - веб апи для поиска  http://localhost:8000/icsshudle/web-api/search?tgt=G6265,T17453  http://localhost:8000/icsshudle/web-api/search?tgt=ук,мал /\ 
+
+========
+Выяснилось что расписание нихуя не одно и теперь нужно свой коллектор парсер с этих адресов сделать
+https://kuzstu.ru/web-content/sitecontent/studentu/raspisanie/EKZAMEN/raspisan.html
+https://kuzstu.ru/web-content/sitecontent/studentu/raspisanie/zaochniki_ust/raspisan.html
+https://kuzstu.ru/web-content/sitecontent/studentu/raspisanie/zaochniki2/raspisan.html
+https://kuzstu.ru/web-content/sitecontent/studentu/raspisanie/zaochniki_asp/raspisan.html

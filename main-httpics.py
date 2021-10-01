@@ -53,21 +53,35 @@ class webapi():
             ret=temp
             now = datetime.datetime.today()-datetime.timedelta(days=1)
             #ret['content']=[]
+            allLessNubers=list()
             for f in temp['content']:
                 caha=datetime.datetime.strptime(f['date_lesson'], "%Y-%m-%d")
                 if(caha>=now):
                     alldates.append( f['date_lesson'])
+                    allLessNubers.append(f['lesson_number'])
             alldates=list(set(alldates))
-            
+            allLessNubers=sorted(list(set(allLessNubers)))
             #print 
             alldates=sorted(alldates)
             exportlist=list()
+            dn='7'
             for g in alldates:
                 educlist=list()
+                expeduclist=list()
+                
                 for i in temp['content']:
                     if(i['date_lesson']==g):
                         educlist.append(i)
-                exportlist.append({'date':g,'content':educlist})
+                        dn=i['day_number']
+                        
+                        pass
+                
+                for d in allLessNubers:
+                    for edl in educlist:
+                        if(d==edl['lesson_number']):
+                           expeduclist.append(edl) 
+
+                exportlist.append({'date':g,'day_number':dn,'content':expeduclist})
             #добавить шапку перед экспортом
             temp['content']=exportlist
             print(alldates)
@@ -103,14 +117,17 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
                     reqggroup=txt.split('/icsshudle/?',1)[1].split('tgt=',1)[1].split(',')
                     print(reqggroup)
                     self.wfile.write(bytes(str(processor(reqggroup)).encode("utf8")))
-                if(txt.find('/icsshudle/web-api/')>-1):
+                
+                st1='/icsshudle/web-api/v1.1d/'
+
+                if(txt.find(st1)>-1):
                     self.send_header('Content-type', 'application/json; charset=utf-8')
                     self.send_header("Access-Control-Allow-Methods", '*')
                     self.send_header("Access-Control-Allow-Origin", '*')
                     
                     
                     self.end_headers()
-                    reqggroup=txt.split('/icsshudle/web-api/',1)
+                    reqggroup=txt.split(st1,1)
                     rqroute=reqggroup[1].split('?',1)
                     if(len(rqroute)==2):
                         route=rqroute[0]
@@ -132,6 +149,7 @@ class SimpleHTTPRequestHandler(BaseHTTPRequestHandler):
             
             self.wfile.write(bytes('error'.encode('utf8')))
         pass
+#webapi.procGetRaspListByID("?tgt=-18920")
 
 httpd = HTTPServer(('', 8000), SimpleHTTPRequestHandler)
 
