@@ -6,9 +6,6 @@
 
 https://portal.kuzstu.ru/api/
 
-### Лист преподов
-https://portal.kuzstu.ru/api/teachers
-
 ### Функции
 #### 	КЭШ
 
