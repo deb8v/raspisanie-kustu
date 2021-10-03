@@ -51,15 +51,15 @@ def getFNameByID(ID):
 
 def editRP(parms):
     editparams={'place':'залупа'}
-    for i in range(0,len(parms)):
+    #for i in range(0,len(parms)):
         
-        if str(parms[i]['teacher_name']).find("Коротков В")>-1:
-            parms[i]['comments']=[["Кто видел короткова?",'Никто'],['Да кто такой этот ваш коротков!']][random.randint(0,1)]
-            pass
-        strd=str(parms[i]['education_group_name'])
-        if(strd.find('з')>-1):
-            strd
-            print(strd);
+        #if str(parms[i]['teacher_name']).find("Коротков В")>-1:
+        #    parms[i]['comments']=[["Кто видел короткова?",'Никто'],['Да кто такой этот ваш коротков!']][random.randint(0,1)]
+        #    pass
+        #strd=str(parms[i]['education_group_name'])
+        #if(strd.find('з')>-1):
+        #    strd
+        #    print(strd);
     #Вот тут вот можно что нибудь редактировать, полнлостью, потом это будет в возможностях преподских
     '''
     date_lesson: "2021-10-15"
