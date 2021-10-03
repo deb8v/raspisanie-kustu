@@ -12,14 +12,28 @@ WEB_ROOT_DIR="tests/trash"
 #WEB_ROOT_DIR=""
 ENABLE_REDOWNLOAD=True
 
-http_proxy  = "http://192.168.2.1:8080"
-https_proxy = "http://192.168.2.1:8080"
 
+raspdict=[  {'N':'Расписание экзаменов','P':'EKZAMEN','U':'https://kuzstu.ru/web-content/sitecontent/studentu/raspisanie/EKZAMEN/raspisan.html'},
+            {'N':'Заочники 1','P':'ZAOCHUST','U':'https://kuzstu.ru/web-content/sitecontent/studentu/raspisanie/zaochniki_ust/raspisan.html'},
+            {'N':'Заочники 2','P':'ZAOCH2','U':'https://kuzstu.ru/web-content/sitecontent/studentu/raspisanie/zaochniki2/raspisan.html'},
+            {'N':'Заочники 3','P':'ZAOCHASP','U':'https://kuzstu.ru/web-content/sitecontent/studentu/raspisanie/zaochniki_asp/raspisan.html'}
+]
+requests.get('https://kuzstu.ru/web-content/sitecontent/studentu/raspisanie/zaochniki_asp/raspisan.html')
 
-proxyDict = { 
-              "http"  : http_proxy, 
-              "https" : https_proxy 
-            }
+def download(url,dnPath,group):
+    URL=url
+    r=requests.get(URL)
+    if(r.status_code==404):exit();
+    parserdoc = bs(r.text, "html.parser")
+    allurls= parserdoc.find_all("a")
+    for url in allurls:
+        alsa=re.fullmatch('\D\D\D\W\d\d\d', url.text)
+        print(alsa)
+
+for i in raspdict:
+    download(i['U'],i['P'],i['N'])
+    print(i)
+pass
 
 if(ENABLE_REDOWNLOAD):
     URL_TEMPLATE="https://kuzstu.ru/web-content/sitecontent/studentu/raspisanie/zaochniki_ust/raspisan.html"

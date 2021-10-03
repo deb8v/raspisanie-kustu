@@ -19,13 +19,13 @@ import random
 CACHE_DIR="docs/"
 modules.cacheDir(CACHE_DIR)
 
-teachersJSON=json.loads(modules.getFromCache('https://portal.kuzstu.ru/api/teachers',3600*24))
-groupsJSON=json.loads(modules.getFromCache('https://portal.kuzstu.ru/api/group',3600*24*7))
+teachersJSON=json.loads(modules.getFromCache('https://portal.kuzstu.ru/api/teachers',3600*24*3))
+groupsJSON=json.loads(modules.getFromCache('https://portal.kuzstu.ru/api/group',3600*24*7*3))
 
 def validStatic():
 
-    teachersJSON=json.loads(modules.getFromCache('https://portal.kuzstu.ru/api/teachers',3600*24))
-    groupsJSON=json.loads(modules.getFromCache('https://portal.kuzstu.ru/api/group',3600*24*7))
+    teachersJSON=json.loads(modules.getFromCache('https://portal.kuzstu.ru/api/teachers',3600*24*3))
+    groupsJSON=json.loads(modules.getFromCache('https://portal.kuzstu.ru/api/group',3600*24*7*3))
 
 #TIME_FORMAT='%X %x %Z'
 TIME_FORMAT='%Y-%m-%d %H:%M:%S'
@@ -92,7 +92,7 @@ def getByGroup_ID(group_id):
             if i['dept_id']==str(pripoduid):
                 return i['name']
 
-    JQ=json.loads(modules.getFromCache(URL,4*3600))
+    JQ=json.loads(modules.getFromCache(URL,8*3600))
     for z in range(0,len(JQ)):
         JQ[z]['source']="Расписание занятий"
     RETURN_CONTENT={'timestamp':time.time(),'time':TIME_NOW,'status':RQ_STATUS,'id':group_id,'name':getGroupNameByID(group_id),'isteacher':False,'content':editRP(JQ)}
@@ -112,7 +112,7 @@ def getTeacherShudleByUID(teacher_id):
     #https://portal.kuzstu.ru/api/teacher_schedule?teacher_id=101040
     URL='https://portal.kuzstu.ru/api/teacher_schedule?teacher_id={teacher_id}'.format(teacher_id=teacher_id)
     
-    JQ=json.loads(modules.getFromCache(URL,1000))
+    JQ=json.loads(modules.getFromCache(URL,8*3600))
     JQo=list()
     teacherName=getTeacherNameByID(teacher_id)
     for i in JQ:

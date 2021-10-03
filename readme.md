@@ -47,6 +47,9 @@ https://portal.kuzstu.ru/api/
 
 2 - веб апи для поиска  http://localhost:8000/icsshudle/web-api/search?tgt=G6265,T17453  http://localhost:8000/icsshudle/web-api/search?tgt=ук,мал /\ 
 
+
+https://yandex.ru/search/?clid=1923018&text=flask%2Bwaitress&lr=64&redircnt=1633085767.1
+
 ========
 Выяснилось что расписание нихуя не одно и теперь нужно свой коллектор парсер с этих адресов сделать
 https://kuzstu.ru/web-content/sitecontent/studentu/raspisanie/EKZAMEN/raspisan.html
