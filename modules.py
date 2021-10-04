@@ -45,7 +45,7 @@ def getFromCache(url,expieri,checkError=True):
         def mapd(x,in_min,in_max,out_min,out_max):
             return (x - in_min) * (out_max - out_min) / (in_max - in_min) + out_min
         JUMP_LEFT_SEQ = '\u001b[100D'
-        with open(path, 'w') as f:
+        with open(path+'.tmp', 'w') as f:
             start = time.time()
             r = requests.get(url, stream=True)
             total_length = r.headers.get('content-length')
@@ -62,6 +62,7 @@ def getFromCache(url,expieri,checkError=True):
                 
                 fileStructure={"modified":time.time(),'url':url,'path':path,'text':r.text}
                 f.write(json.dumps(fileStructure))
+            
                 
                 
             
@@ -86,7 +87,13 @@ def getFromCache(url,expieri,checkError=True):
                 fileStructure={"modified":time.time(),'url':url,'path':path,'text':str(filetemp.decode('cp1251'))}
                 f.write(json.dumps(fileStructure))
                 f.close()
-                print()        
+                
+                print()
+            if(RQ_STATUS==200):
+                wfa=open(path, 'w')
+                wfa.write(open(path+'.tmp', 'r').read())
+                wfa.close()
+                
 #    
     def getModifTime(path):
         #cont=open('docs/e621c5499e18d482dbc52c2c666344c8.bak','r')
@@ -155,7 +162,7 @@ def test():
     teachersJSON=getFromCache('https://portal.kuzstu.ru/api/teachers',3600*24)
     print("R2t")
     teachersJSON=getFromCache('https://portal.kuzstu.ru/api/teachers',3600*24)
-    getFromCache('https://portal.kuzstu.ru/file/get/169315.rtf',200)
+    
             
 #test();
     ## 1 - проверяем наличие файла
