@@ -51,7 +51,7 @@ https://portal.kuzstu.ru/api/
 https://yandex.ru/search/?clid=1923018&text=flask%2Bwaitress&lr=64&redircnt=1633085767.1
 
 ========
-Выяснилось что расписание нихуя не одно и теперь нужно свой коллектор парсер с этих адресов сделать
+Выяснилось что расписание не одно и теперь нужно свой коллектор парсер с этих адресов сделать
 https://kuzstu.ru/web-content/sitecontent/studentu/raspisanie/EKZAMEN/raspisan.html
 https://kuzstu.ru/web-content/sitecontent/studentu/raspisanie/zaochniki_ust/raspisan.html
 https://kuzstu.ru/web-content/sitecontent/studentu/raspisanie/zaochniki2/raspisan.html
